@@ -1,0 +1,25 @@
+---
+# Install containerd
+- name: Containerd package
+  ansible.builtin.apt:
+    name: containerd.io
+    state: present
+    update_cache: yes
+
+- name: ensure containerd directory exists
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+
+# copy config.toml
+- name: copy config
+  ansible.builtin.copy:
+    src: config.toml
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: containerd
+

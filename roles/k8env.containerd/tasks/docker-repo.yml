@@ -1,0 +1,22 @@
+---
+# Add repository and ensure permissions are correct
+- name: Add Docker Module Repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: [deb]
+    uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+    signed_by: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+    suites: ["{{ ansible_distribution_release | lower }}"]
+    components: [stable]
+    state: present
+    enabled: yes
+
+- name: Set keyring permissions
+  ansible.builtin.file:
+    path: /usr/share/keyrings/docker-archive-keyring.gpg
+    mode: '0644'
+
+- name: Set repository list permissions
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    mode: '0644'

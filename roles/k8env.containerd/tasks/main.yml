@@ -1,0 +1,19 @@
+---
+# test for docker repo
+- name: Docker repo test
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/docker.list
+  register: docker_repo
+
+- include_tasks: docker-repo.yml
+  when: not docker_repo.stat.exists
+
+- name: containerd test
+  ansible.builtin.stat:
+    path: /etc/containerd/config.toml
+  register: containerd_installed
+
+- include_tasks: containerd-install.yml
+  when: not containerd_installed
+
+
