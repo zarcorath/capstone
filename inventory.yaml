@@ -1,3 +1,5 @@
+---
+# Simple inventory. Repace with Netbox API call in production.
 k8cluster:
   hosts:
     node1.homeofgeeks.com:

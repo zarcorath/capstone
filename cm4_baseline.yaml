@@ -1,8 +1,10 @@
+---
 - hosts: k8cluster
   gather_facts: no
   become: yes
 
   tasks:
+  # Three CM4s have available SSD. This formats and mounts the drives for use
   - name: format nvme
     community.general.filesystem:
       fstype: ext4
@@ -24,12 +26,14 @@
       state: mounted
     when: nvme == true
 
+# Ensure all packages are up to date
   - name: update everything
     ansible.builtin.apt:
       name: "*"
       state: latest
       update_cache: yes
 
+# The raspberry pi version of Ubuntu is missing some modules required by eBPF
   - name: add missing ubuntu modules
     ansible.builtin.apt:
       name: linux-modules-extra-raspi
