@@ -1,0 +1,39 @@
+- hosts: k8cluster
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - name: format nvme
+    community.general.filesystem:
+      fstype: ext4
+      dev: /dev/nvme0n1
+      state: present
+    when: nvme == true
+
+  - name: create mount point
+    ansible.builtin.file:
+      path: /k8space
+      state: directory
+    when: nvme == true
+
+  - name: mount nvme
+    ansible.posix.mount:
+      path: /k8space
+      src: /dev/nvme0n1
+      fstype: ext4
+      state: mounted
+    when: nvme == true
+
+  - name: update everything
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+
+  - name: add missing ubuntu modules
+    ansible.builtin.apt:
+      name: linux-modules-extra-raspi
+      state: present
+
+  - name: reboot system
+    ansible.builtin.reboot:
