@@ -1,0 +1,90 @@
+---
+# Test for K8 repo
+- name: K8 repo test
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/kubernetes.sources
+  register: k8_repo
+
+# Install k8 repo
+- include_tasks: k8-repo.yml
+  when: not k8_repo.stat.exists
+
+# Modprope requirements
+- name: Overlay
+  community.general.modprobe:
+    name: overlay
+    state: present
+  when: not k8_repo.stat.exists
+
+- name: br_netfilter
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+  when: not k8_repo.stat.exists
+
+# Set sysctl requirements
+- name: sysctl ipv4
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+  when: not k8_repo.stat.exists
+
+- name: sysctl bridge ip6tables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: true
+  when: not k8_repo.stat.exists
+
+- name: sysctl bridge iptables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: true
+  when: not k8_repo.stat.exists
+
+- name: run sysctl system command
+  ansible.builtin.shell: sysctl --system 
+  when: not k8_repo.stat.exists
+
+# install or update kubernetes components
+- name: Install K8 apps
+  ansible.builtin.apt:
+    name:
+    - kubelet
+    - kubeadm
+    - kubectl
+    state: latest
+    update_cache: yes
+  register: k8_installed
+
+# Make sure swap is disabled if the above changes
+- name: Disable swap
+  ansible.builtin.shell: swapoff -a
+  when: k8_installed is changed
+
+- name: Disable swap in fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+  when: k8_installed is changed
+
+# Install Cilium CLI
+- name: get tar file
+  ansible.builtin.get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ ciliumversion }}/cilium-linux-{{ ciliumarch }}.tar.gz"
+    dest: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    checksum: "sha256:https://github.com/cilium/cilium-cli/releases/download/{{ ciliumversion }}/cilium-linux-{{ ciliumarch }}.tar.gz.sha256sum"
+
+- name: extract cilium bin
+  ansible.builtin.unarchive:
+    src: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: true
+
+- name: remove tar
+  ansible.builtin.file:
+    path: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    state: absent

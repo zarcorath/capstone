@@ -1,0 +1,17 @@
+# Add the K8 repo using DEB822 format
+- name: Add k8 Repository
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: "https://pkgs.k8s.io/core:/stable:/{{ k8Version }}/deb/"
+    signed_by: "https://pkgs.k8s.io/core:/stable:/{{ k8Version }}/deb/Release.key"
+    suites: "/"
+    components: stable
+    state: present
+    enabled: yes
+
+# Verify permissions for the repo
+- name: Set repository list permissions
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.sources
+    mode: '0644'
