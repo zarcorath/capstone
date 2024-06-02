@@ -1,6 +1,6 @@
 ---
 # handlers file for k8env.containerd
-- name: restart containerd
+- name: containerd
   service:
     name: containerd
     state: restarted
