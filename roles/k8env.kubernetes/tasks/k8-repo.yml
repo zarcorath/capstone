@@ -2,11 +2,10 @@
 - name: Add k8 Repository
   ansible.builtin.deb822_repository:
     name: kubernetes
-    types: deb
+    types: [deb]
     uris: "https://pkgs.k8s.io/core:/stable:/{{ k8Version }}/deb/"
     signed_by: "https://pkgs.k8s.io/core:/stable:/{{ k8Version }}/deb/Release.key"
-    suites: "/"
-    components: stable
+    suites: [/]
     state: present
     enabled: yes
 

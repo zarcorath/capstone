@@ -2,6 +2,8 @@
 # defaults file for k8env.kubernetes
 k8Version: v1.30
 ciliumversion: 'v0.16.8'
-ciliumarch: aarch64
+ciliumarch: arm64
 
 k8apiendpoint: k8api.homeofgeeks.com
+k8servicedomain: k8.homeofgeeks.com
+k8podcidr: '10.244.0.0/16'

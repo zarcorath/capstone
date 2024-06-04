@@ -3,4 +3,5 @@
   gather_facts: yes
   become: yes
   roles:
-    - k8env.containerd
+#    - k8env.containerd
+    - k8env.kubernetes

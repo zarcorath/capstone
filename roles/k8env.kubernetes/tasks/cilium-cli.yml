@@ -1,0 +1,18 @@
+---
+# Install Cilium CLI
+- name: get tar file
+  ansible.builtin.get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ ciliumversion }}/cilium-linux-{{ ciliumarch }}.tar.gz"
+    dest: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    checksum: "sha256:https://github.com/cilium/cilium-cli/releases/download/{{ ciliumversion }}/cilium-linux-{{ ciliumarch }}.tar.gz.sha256sum"
+
+- name: extract cilium bin
+  ansible.builtin.unarchive:
+    src: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: true
+
+- name: remove tar
+  ansible.builtin.file:
+    path: "/tmp/cilium-linux-{{ ciliumarch }}.tar.gz"
+    state: absent

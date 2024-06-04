@@ -18,5 +18,5 @@ k8cluster:
       node_type: "master"
       nvme: false
     node6.homeofgeeks.com:
-      node_type: "master"
+      node_type: "primary_master"
       nvme: false

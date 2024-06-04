@@ -1,0 +1,21 @@
+---
+# start first control ndoe
+- name: initialize master
+  ansible.builtin.command: "kubeadm init --upload-certs --control-plane-endpoint={{ k8apiendpoint }} --service-dns-domain={{ k8servicedomain }} --skip-phases=addon/kube-proxy --pod-network-cidr={{ k8podcidr }}"
+  register: kubeadm_init
+
+- name: validation
+  ansible.builtin.debug:
+    var: kubeadm_init
+
+# Link the admin.conf so that kubectl commands work
+- name: Ensure .kube directory exists.
+  file:
+    path: ~/.kube
+    state: directory
+
+- name: Symlink the kubectl admin.conf to ~/.kube/conf.
+  file:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    state: link
