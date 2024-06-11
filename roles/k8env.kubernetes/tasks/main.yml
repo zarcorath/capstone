@@ -101,12 +101,10 @@
   delegate_facts: true
   with_items: "{{ groups['k8cluster'] }}"
 
-## Do helm here or add other nodes??
-
-# Add nodes
-- name: Add control plane node
-  ansible.builtin.shell: "{{ kubernetes_join_command }} --control-plane" #breaking, must do manually
-  when: node_type == "master"
+# Add control plane  **BROKEN**
+# - name: Add control plane node
+#   ansible.builtin.shell: "{{ kubernetes_join_command }} --control-plane" 
+#   when: node_type == "master"
 
 - name: Add worker nodes
   ansible.builtin.shell: "{{ kubernetes_join_command }}"

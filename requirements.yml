@@ -1,0 +1,4 @@
+collections:
+  - name: community.docker
+#  - name: arensb.truenas
+  - name: kubernetes.core

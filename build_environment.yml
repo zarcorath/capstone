@@ -2,6 +2,34 @@
 - hosts: k8cluster
   gather_facts: yes
   become: yes
+  vars_files:
+    - global_vars.yml
   roles:
-#    - k8env.containerd
+    - k8env.containerd
     - k8env.kubernetes
+  tasks:
+    - name: Python dependency
+      ansible.builtin.apt:
+        name: python3-pip
+        state: latest
+        update_cache: yes
+      when: node_type == "primary_master" or node_type == "master"
+
+# Unknown issue where freshly installed pip is failing with kubernetes-valdiate. Updating pip fixes the issue.
+    - name: Update pip
+      ansible.builtin.pip:
+        name: pip
+        state: latest
+      when: node_type == "primary_master" or node_type == "master"
+
+    - name: install pip modules
+      ansible.builtin.pip:
+        name:
+          - kubernetes
+          - kubernetes-validate==1.29.1
+      when: node_type == "primary_master" or node_type == "master"
+
+    - name: cilium install
+      include_role:
+        name: k8env.cilium
+      when: node_type == "primary_master"

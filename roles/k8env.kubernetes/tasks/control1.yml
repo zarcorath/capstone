@@ -19,3 +19,8 @@
     src: /etc/kubernetes/admin.conf
     dest: ~/.kube/config
     state: link
+    
+# The standard token command doesn't work. Needs some method of interpretting the output of kubeadm init. Pause and copy the debug output from screen
+- name: Join other control plane
+  ansible.builtin.pause:
+    prompt: "Copy the kubeadm join for the control from the above debug message and execute on the other controller"

@@ -1,0 +1,72 @@
+---
+# tasks file for k8env.cilium
+- name: helm repo test
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/helm.sources
+  register: helm_repo
+
+# Install helm repo
+- include_tasks: helm-repo.yml
+  when: not helm_repo.stat.exists
+
+# install or update kubernetes components
+- name: Install helm apps
+  ansible.builtin.apt:
+    name: helm
+    state: latest
+    update_cache: yes
+
+# Install / verify Cilium repo is installed
+- name: Install Cilium chart repo
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: "https://helm.cilium.io/"
+
+# Install Cilium Helm Chart
+- name: cilium helm chart
+  kubernetes.core.helm:
+    name: cilium
+    chart_ref: cilium/cilium
+    namespace: kube-system
+    values:
+      kubeProxyReplacement: true
+      k8sServiceHost: "{{ k8apiendpointIP }}"
+      k8sServicePort: '6443'
+      l2announcements:
+        enabled: true
+      externalIPs:
+        enabled: true
+      hubble:
+        relay:
+          enabled: true
+        ui:
+          enabled: true
+
+# The Ansible kubernetes.core collection won't install these custom resources natively 
+# make directory for custom resource files
+- name: cilium directory
+  ansible.builtin.file:
+    path: /cilium
+    mode: '0644'
+    state: directory
+
+# Create load balancer yml file
+- name: lb yml resouce
+  ansible.builtin.template:
+    src: lb_pool.yml.j2
+    dest: /cilium/lb_pool.yml
+
+# create lb l2 annouce yml
+- name: l2 annouce yml resouce
+  ansible.builtin.template:
+    src: lbl2annoucne.yml.j2
+    dest: /cilium/l2annouce.yml
+
+# Apply the two custom resouces
+- name: kubectl apply LB
+  ansible.builtin.shell: kubectl  apply -f /cilium/lb_pool.yml
+- name: kubectl apply l2a
+  ansible.builtin.shell: kubectl  apply -f /cilium/l2annouce.yml
+
+
+ 

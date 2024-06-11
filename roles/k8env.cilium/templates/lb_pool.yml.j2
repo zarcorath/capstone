@@ -1,0 +1,9 @@
+apiVersion: {{ ciliumAPIversion }}
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "lb-pool"
+  namespace: "kube-system"
+spec:
+  blocks:
+  - start: {{ l2blockstart }}
+    stop: {{ l2blockstop }}

@@ -12,5 +12,5 @@
 # Verify permissions for the repo
 - name: Set repository list permissions
   ansible.builtin.file:
-    path: /etc/apt/sources.list.d/docker.sources
+    path: /etc/apt/sources.list.d/kubernetes.sources
     mode: '0644'

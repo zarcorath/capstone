@@ -19,4 +19,5 @@
 - include_tasks: containerd-install.yml
   when: not containerd_installed.stat.exists
 
-
+- name: Reboot
+  ansible.builtin.reboot:

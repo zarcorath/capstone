@@ -1,0 +1,11 @@
+---
+k8Version: v1.29
+ciliumversion: 'v0.16.8'
+k8apiendpointIP: '192.168.4.155'
+k8apiendpoint: k8api.homeofgeeks.com
+k8servicedomain: k8.homeofgeeks.com
+ciliumarch: arm64
+k8podcidr: '10.244.0.0/16'
+ciliumAPIversion: 'cilium.io/v2alpha1'
+l2blockstart: '192.168.4.10'
+l2blockstop: '192.168.4.60'

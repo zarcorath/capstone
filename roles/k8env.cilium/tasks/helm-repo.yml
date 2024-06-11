@@ -1,0 +1,18 @@
+---
+# Add the helm repo using DEB822 format
+- name: Add Helm Repository
+  ansible.builtin.deb822_repository:
+    name: helm
+    types: [deb]
+    uris: "https://baltocdn.com/helm/stable/debian/"
+    signed_by: "https://baltocdn.com/helm/signing.asc"
+    suites: all
+    state: present
+    components: main
+    enabled: yes
+
+# Verify permissions for the repo
+- name: Set repository list permissions
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/helm.sources
+    mode: '0644'

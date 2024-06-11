@@ -2,8 +2,14 @@
 - hosts: k8cluster
   gather_facts: no
   become: yes
+  vars:
+    ansible_host_key_checking: false
 
   tasks:
+  - name: import into known hosts
+    ansible.builtin.shell: "ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts"
+    delegate_to: localhost
+
   # Three CM4s have available SSD. This formats and mounts the drives for use
   - name: format nvme
     community.general.filesystem:
