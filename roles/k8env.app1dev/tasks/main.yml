@@ -1,0 +1,23 @@
+---
+# Create the namespace that developers will use for Application One.
+- name: Create Namespace
+  kubernetes.core.k8s:
+    name: apponedev
+    api_version: v1
+    kind: Namespace
+    state: present
+
+# Create a role for RBAC assignment.
+- name: Developer Role Creation
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      api_version: v1
+      kind: Role
+      metadata:
+        namespace: apponedev
+        name: dev-writer
+      rules:
+        - apiGroups: [""] 
+          resources: ["*"]
+          verbs: ["get", "watch", "list", "create", "delete"]

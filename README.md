@@ -20,3 +20,21 @@
 ## Variables
 * The primary playbook incorporates all variables defined in global_vars.yml
 * Role defaults are not used in favor of global_vars.yml
+
+## Add new users
+### Create a new YAML file from the following template and apply to the cluster
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developers
+  namespace: applicationone
+subjects:
+- kind: User
+  name: myname # add user's name here
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: dev-writer # this must match the name of the Role
+  apiGroup: rbac.authorization.k8s.io
+```
