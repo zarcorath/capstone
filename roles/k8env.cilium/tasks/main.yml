@@ -41,7 +41,13 @@
           enabled: true
         ui:
           enabled: true
-
+        peerService:
+          clusterDomain: "{{ k8apiendpoint }}"
+      ingressController:
+        enabled: true
+        loadbalancerMode: dedicated
+        default: true
+          
 # The Ansible kubernetes.core collection won't install these custom resources natively 
 # make directory for custom resource files
 - name: cilium directory
